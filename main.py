@@ -7,30 +7,70 @@ class Field:
     def __str__(self):
         return str(self.value)
 
-class Name:
-    # реалізація класу
-    ...
+class Name(Field):
+    def __init__(self, value):
+        super().__init__(value)
 
-class Phone:
-    # реалізація класу
-    ...
+class Phone(Field):
+    def __init__(self, value):
+        if not (value.isdigit() and len(value) == 10):
+            raise ValueError("The phone number must consist of 10 digits")
+
+        super().__init__(value)
 
 class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
 
-    # реалізація класу
+    def add_phone(self, number):
+        new_phone = Phone(number)
+        self.phones.append(new_phone)
+
+    def remove_phone(self, number):
+        to_remove_phone = Phone(number)
+
+        for phone in self.phones:
+            if phone.value == to_remove_phone.value:
+                self.phones.remove(phone)
+                return
+
+        raise ValueError("Phone number not found")
+
+    def edit_phone(self, old_number, new_number):
+        old_phone = Phone(old_number)
+        new_phone = Phone(new_number)
+
+        for i, phone in enumerate(self.phones):
+            if phone.value == old_phone.value:
+                self.phones[i] = new_phone
+                return
+
+        raise ValueError("Phone number not found")
+
+    def find_phone(self, number):
+        for phone in self.phones:
+            if phone.value == number:
+                return phone
+
+        return None
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
 
-class AddressBook:
-    # реалізація класу
-    ...
+class AddressBook(UserDict):
+    def add_record(self, record):
+        self.data[record.name.value] = record
+
+    def delete(self, name):
+        if name in self.data:
+            del self.data[name]
+
+    def find(self, name):
+        return self.data.get(name, None)
 
 if __name__ == "__main__":
-        # Створення нової адресної книги
+    # Створення нової адресної книги
     book = AddressBook()
 
     # Створення запису для John
